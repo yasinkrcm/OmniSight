@@ -1,0 +1,6 @@
+*.pt
+*.ptx
+
+# Model directories
+backend/media/models/
+PeopleCounting/
