@@ -36,7 +36,7 @@ export default function Odev1Page() {
   const pendingRef = useRef(false);
   const reqIdRef = useRef<number>(0);
 
-  const WS_URL = process.env.NODE_ENV === "development" ? "ws://localhost:8000/ws/detect/" : `ws://${typeof window !== 'undefined' ? window.location.host : ''}/ws/detect/`;
+  const WS_URL = process.env.NODE_ENV === "development" ? "ws://localhost:8000/ws/detect/" : `wss://${typeof window !== 'undefined' ? window.location.host : ''}/ws/detect/`;
 
   // Auto-stop on unmount
   useEffect(() => {
