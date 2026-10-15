@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'REDACTED'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production')
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
@@ -52,7 +52,8 @@ MODEL_PATHS = {
 }
 
 # Roboflow PPE model config (Serverless REST API)
-ROBOFLOW_API_KEY = os.environ.get('ROBOFLOW_API_KEY', 'REDACTED-ROTATE-ME')
+# API anahtarını ortam değişkeninden oku — asla koda gömme!
+ROBOFLOW_API_KEY = os.environ.get('ROBOFLOW_API_KEY', '')
 ROBOFLOW_PPE_URL = 'https://serverless.roboflow.com/ppe-gzzdx/1'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

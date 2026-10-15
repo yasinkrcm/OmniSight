@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@heroui/react";
 
 const API_BASE = process.env.NODE_ENV === "development" ? "http://localhost:8000/api" : "/api";
@@ -37,10 +37,6 @@ export default function PeopleCounterPage() {
 
   const WS_URL = process.env.NODE_ENV === "development" ? "ws://localhost:8000/ws/detect/" : `ws://${typeof window !== 'undefined' ? window.location.host : ''}/ws/detect/`;
 
-  useEffect(() => {
-    return () => stopStream();
-  }, []);
-
   const handleImageSelect = (file: File) => {
     setImageFile(file);
     const reader = new FileReader();
@@ -70,13 +66,6 @@ export default function PeopleCounterPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formImage = (formData: FormData) => {
-    if (!imageFile) return;
-    formData.append("image", imageFile);
-    formData.append("task", "detect");
-    formData.append("model_name", MODEL_NAME);
   };
 
   const startStream = async (mode = facingMode) => {
@@ -134,9 +123,10 @@ export default function PeopleCounterPage() {
     }
   };
 
-  const loop = useCallback(() => {
+  function loop() {
     if (!processingRef.current) return;
 
+    // eslint-disable-next-line react-hooks/purity -- loop yalnızca rAF/WS callback'lerinden çağrılır
     const now = performance.now();
     const elapsed = now - lastFpsTimeRef.current;
     if (elapsed >= 1000) {
@@ -194,7 +184,7 @@ export default function PeopleCounterPage() {
 
     frameCountRef.current += 1;
     rafRef.current = requestAnimationFrame(loop);
-  }, []);
+  }
 
   const stopStream = () => {
     processingRef.current = false;
@@ -219,6 +209,11 @@ export default function PeopleCounterPage() {
     setPersonCount(0);
     setFps(0);
   };
+
+  // Auto-stop on unmount
+  useEffect(() => {
+    return () => stopStream();
+  }, []);
 
   const toggleCamera = () => {
     const newMode = facingMode === "environment" ? "user" : "environment";

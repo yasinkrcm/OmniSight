@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 import cv2
 import numpy as np
 from pymongo import MongoClient
-from django.http import StreamingHttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from ultralytics import YOLO
@@ -62,8 +62,6 @@ def _preload_models():
             print(f"[PRELOAD] Loading {name} model: {path}")
             _LOADED_MODELS[path] = YOLO(path)
             print(f"[PRELOAD] {name} model ready ✓")
-
-_preload_models()
 
 def _save_uploaded_file(uploaded_file, sub_dir):
     """Save an uploaded file and return its path."""

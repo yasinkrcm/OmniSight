@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@heroui/react";
 
 const API_BASE = process.env.NODE_ENV === "development" ? "http://localhost:8000/api" : "/api";
@@ -37,11 +37,6 @@ export default function Odev2Page() {
   const reqIdRef = useRef<number>(0);
 
   const WS_URL = process.env.NODE_ENV === "development" ? "ws://localhost:8000/ws/detect/" : `ws://${typeof window !== 'undefined' ? window.location.host : ''}/ws/detect/`;
-
-  // Auto-stop on unmount
-  useEffect(() => {
-    return () => stopStream();
-  }, []);
 
   const handleImageSelect = (file: File) => {
     setImageFile(file);
@@ -128,9 +123,10 @@ export default function Odev2Page() {
     }
   };
 
-  const loop = useCallback(() => {
+  function loop() {
     if (!processingRef.current) return;
 
+    // eslint-disable-next-line react-hooks/purity -- loop yalnızca rAF/WS callback'lerinden çağrılır
     const now = performance.now();
     const elapsed = now - lastFpsTimeRef.current;
     if (elapsed >= 1000) {
@@ -188,7 +184,7 @@ export default function Odev2Page() {
 
     frameCountRef.current += 1;
     rafRef.current = requestAnimationFrame(loop);
-  }, []);
+  }
 
   const stopStream = () => {
     processingRef.current = false;
@@ -211,6 +207,11 @@ export default function Odev2Page() {
     setDetectionCount(0);
     setFps(0);
   };
+
+  // Auto-stop on unmount
+  useEffect(() => {
+    return () => stopStream();
+  }, []);
 
   const toggleCamera = () => {
     const newMode = facingMode === "environment" ? "user" : "environment";
